@@ -1,5 +1,4 @@
 from app.knight_info import Weapon, Knight
-from app.preparation import apply_armour, apply_weapon, apply_potion
 from app.battle import fight
 
 
@@ -92,43 +91,30 @@ KNIGHTS = {
 
 
 def battle(knights_dict: dict) -> dict:
-    list_of_knights = []
+    fight_dict = {}
     for key, value in knights_dict.items():
-        weapon_ = Weapon(value["weapon"]["name"], value["weapon"]["power"])
-        knight = Knight(
+        weapon_d = Weapon(
+            name=value["weapon"]["name"],
+            power=value["weapon"]["power"]
+        )
+        fight_dict[key] = Knight(
             name=value["name"],
             power=value["power"],
             hp=value["hp"],
-            weapon=weapon_,
+            weapon=weapon_d,
             armour=value["armour"],
             potion=value["potion"]
         )
-        apply_armour(knight)
-        apply_weapon(knight)
-        apply_potion(knight)
-        list_of_knights.append(knight)
-
-    lancelot = None
-    arthur = None
-    mordred = None
-    red_knight = None
-    for knight in list_of_knights:
-        if knight.name == "Lancelot":
-            lancelot = knight
-        elif knight.name == "Arthur":
-            arthur = knight
-        elif knight.name == "Mordred":
-            mordred = knight
-        elif knight.name == "Red Knight":
-            red_knight = knight
+    for knight in fight_dict.values():
+        knight.prepare_for_battle()
 
     # 1 Lancelot vs Mordred:
-    fight(lancelot, mordred)
+    fight(fight_dict["lancelot"], fight_dict["mordred"])
 
     # 2 Arthur vs Red Knight:
-    fight(arthur, red_knight)
+    fight(fight_dict["arthur"], fight_dict["red_knight"])
 
     results = {}
-    for knight in list_of_knights:
+    for knight in fight_dict.values():
         results[knight.name] = knight.hp
     return results
